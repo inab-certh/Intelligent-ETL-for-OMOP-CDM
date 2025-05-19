@@ -1,0 +1,58 @@
+{
+  "target_table": "omop.location",
+  "source_table_involve": "synthea.patients",
+  "columns": [
+    {
+      "target_column": "location_id",
+      "source_column": ["city", "state", "zip"],
+      "transformation_type": "row_number_ordered",
+      "order_by": ["city", "state", "zip"],
+      "description": "Generating a unique location_id by row_number based on city, state, and zip ordering."
+    },
+    {
+      "target_column": "address_1",
+      "source_column": null,
+      "transformation_type": "null_constant",
+      "description": "Address 1 is not available in source; set as NULL."
+    },
+    {
+      "target_column": "address_2",
+      "source_column": null,
+      "transformation_type": "null_constant",
+      "description": "Address 2 is not available in source; set as NULL."
+    },
+    {
+      "target_column": "city",
+      "source_column": "city",
+      "transformation_type": "direct_copy",
+      "description": "Directly copied from synthea.patients.city."
+    },
+    {
+      "target_column": "state",
+      "source_column": "state",
+      "transformation_type": "lookup",
+      "lookup_table": "omop.states_map",
+      "lookup_key": "state",
+      "lookup_value": "state_abbreviation",
+      "description": "Mapped to state abbreviation using the states_map lookup table."
+    },
+    {
+      "target_column": "county",
+      "source_column": null,
+      "transformation_type": "null_constant",
+      "description": "County is not available in source; set as NULL."
+    },
+    {
+      "target_column": "zip",
+      "source_column": "zip",
+      "transformation_type": "direct_copy",
+      "description": "Directly copied from synthea.patients.zip."
+    },
+    {
+      "target_column": "location_source_value",
+      "source_column": "zip",
+      "transformation_type": "direct_copy",
+      "description": "Using zip as the location source value."
+    }
+  ]
+}
