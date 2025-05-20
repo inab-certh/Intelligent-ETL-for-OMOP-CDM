@@ -1,5 +1,4 @@
-#!/bin/bash
-# Configuration
+
 DB_HOST="localhost"
 DB_PORT="5432"
 DB_NAME="synthea"
@@ -7,14 +6,12 @@ DB_USER="admin"
 DB_PASS="adminpassword"
 CSV_DIR="/home/petriscyril/Desktop/Agent_ETL/Synthea"
 
-# Boucle sur tous les fichiers CSV
 for file in "$CSV_DIR"/*.csv; do
   if [ -f "$file" ]; then
     filename=$(basename "$file")
     tablename="${filename%.*}"
     echo "Importing $filename into table $tablename..."
     
-    # Commande csvsql avec délimiteur explicite
     csvsql --db "postgresql://$DB_USER:$DB_PASS@$DB_HOST:$DB_PORT/$DB_NAME" \
       --insert "$file" \
       --overwrite \

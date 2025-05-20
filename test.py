@@ -41,7 +41,6 @@ class Model:
     def generate(self, input: str):
         return self.pipeline(input)
 
-# Point d'entrée explicite
 if __name__ == "__main__":
     with app.run():
         model = Model()

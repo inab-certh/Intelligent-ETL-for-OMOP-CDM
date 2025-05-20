@@ -1,13 +1,20 @@
 {
-  "business_logic": "For every unique combination of address fields (like city, state, zip, etc.), there should be a single, stable location_id.",
-  "target_table": "omop.location",
-  "source_table": "synthea.patients",
-  "distinct_group": {
+    "business_logic": "For every unique combination of address fields (like city, state, zip, etc.), there should be a single, stable location_id.",
+    "target_table": "omop.location",
+    "source_table": "synthea.patients",
     "columns": [
       {
         "target": "location_id",
         "source": ["city", "state", "zip"],
         "transform": "row_number"
+      },
+      {
+        "target": "address_1",
+        "transform": "null"
+      },
+      {
+        "target": "address_2",
+        "transform": "null"
       },
       {
         "target": "city",
@@ -24,6 +31,10 @@
         }
       },
       {
+        "target": "county",
+        "transform": "null"
+      },
+      {
         "target": "zip",
         "source": "zip"
       },
@@ -32,23 +43,5 @@
         "source": "zip"
       }
     ]
-  },
-  "columns": [
-    {
-      "target": "address_1",
-      "transform": "null",
-      "cast_type": "VARCHAR"
-    },
-    {
-      "target": "address_2",
-      "transform": "null",
-      "cast_type": "VARCHAR"
-    },
-    {
-      "target": "county",
-      "transform": "null",
-      "cast_type": "VARCHAR"
-    }
-  ]
-}
-
+  }
+  
