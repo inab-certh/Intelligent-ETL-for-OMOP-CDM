@@ -1,0 +1,16 @@
+TABLE: location
+DEPENDENCIES: states_map
+OMOP CDM version: 5.4
+SCRIPTS : None 
+COLUMNS:
+  location_id INTEGER PRIMARY KEY
+  address_1 VARCHAR(50)
+  address_2 VARCHAR(50)
+  city VARCHAR(50)
+  state VARCHAR(2)
+  zip VARCHAR(9)
+  county VARCHAR(20)
+  location_source_value VARCHAR(50)
+TESTS:
+  check_location_duplicates
+  check_primary_key_uniqueness
