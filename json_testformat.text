@@ -1,0 +1,104 @@
+-----Test json 1 
+{
+  "id": "number",
+  "output_type": "view | insert",
+  
+  "view_name": "string",                // only for output_type=view
+  "source_table": "string | null",     // base table for source data
+  "source_view": "string | null",      // optional if using another view
+  "target_table": "string",            // only for output_type=insert
+
+  "joins": [                            // optional; joins for views
+    {
+      "type": "inner | left | right | full",
+      "table": "string",
+      "alias": "string (optional)",
+      "on": { "source_col": "target_col" },      // 1 or many
+      "filters": { "col": "value or null" }      // optional
+    }
+  ],
+
+  "select": [ "col_name", ... ],       // for basic SELECTs (view)
+
+  "mappings": [                        // for complex SELECTs or inserts
+    {
+      "target": "column_name",
+      "source": "source_column (optional)",
+      "value": "literal value (optional)",
+      "expression": "SQL expression (optional)",
+      "transform": "null | function name (optional)",
+      "cast_type": "SQL type (optional)"
+    }
+  ],
+
+  "columns": [                         // for insert mappings
+    {
+      "target": "column_name",
+      "source": "source_column (optional)",
+      "value": "literal value (optional)",
+      "expression": "SQL expression (optional)",
+      "transform": "null | function name (optional)",
+      "cast_type": "SQL type (optional)"
+    }
+  ],
+
+  "primary_key": {                     // for insert output_type only
+    "column": "target_column_name",
+    "generation": "uuid | sequence | hash",
+    "method": "md5_hash | concat | etc.",
+    "source_fields": [ "field1", "field2" ]
+  }
+}
+
+-----Test json 2
+
+{
+  "id": 0,
+  "output_type": "view | insert",
+
+  "view_name": "string (for views)",
+  "source_table": "string | null",
+  "source_view": "string | null",
+  "target_table": "string (for inserts)",
+
+  "joins": [
+    {
+      "type": "inner | left | right | full",
+      "table": "string",
+      "alias": "string (optional)",
+      "on": {
+        "left_expression": "right_expression"
+      },
+      "filters": {
+        "column": "value or null"
+      }
+    }
+  ],
+
+  "mappings": [  // Used for views or inserts
+    {
+      "target": "target_column_name",
+      "source": "source_column (optional)",
+      "value": "literal value (optional)",
+      "cast_type": "SQL_TYPE (optional)",
+      "description": "human-readable explanation of how to compute this field"
+    }
+  ],
+
+  "columns": [  // Alternative to mappings for inserts
+    {
+      "target": "target_column_name",
+      "source": "source_column (optional)",
+      "value": "literal value (optional)",
+      "cast_type": "SQL_TYPE (optional)",
+      "description": "human-readable explanation of how to compute this field"
+    }
+  ],
+
+  "primary_key": {
+    "column": "target_column_name",
+    "generation": "uuid | sequence | hash",
+    "method": "md5_hash | concat | etc.",
+    "source_fields": ["field1", "field2"]
+  }
+}
