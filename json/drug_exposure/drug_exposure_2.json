@@ -1,0 +1,10 @@
+{
+    "name": "combined_drug_exposure",
+    "output_type": "view",
+    "operation": "union_all",
+    "sources": [
+      "drug_exposure_from_medications",
+      "drug_exposure_from_immunizations"
+    ]
+  }
+  
