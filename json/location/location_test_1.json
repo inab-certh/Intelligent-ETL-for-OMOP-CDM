@@ -1,48 +1,47 @@
 {
-    "business_logic": "For every unique combination of address fields (like city, state, zip, etc.), there should be a single, stable location_id.",
-    "target_table": "omop.location",
-    "source_table": "location_enriched_view",
-    "distinct_group": {
-      "columns": [
-        {
-          "target": "location_id",
-          "source": ["city", "state_abbreviation", "zip"],
-          "transform": "row_number"
-        },
-        {
-          "target": "city",
-          "source": "city"
-        },
-        {
-          "target": "state",
-          "source": "state_abbreviation"
-        },
-        {
-          "target": "zip",
-          "source": "zip"
-        },
-        {
-          "target": "location_source_value",
-          "source": "zip"
-        }
-      ]
+  "target_table": "omop.location",
+  "source_table": "location_enriched_view",
+  "view_name": "insertable_location_data",
+  "output_type": "view",
+
+  "primary_key": {
+    "column": "location_id",
+    "generation": "uuid",
+    "method": "md5_hash",
+    "source_fields": ["city", "state_abbreviation", "zip"]
+  },
+
+  "columns": [
+    {
+      "target": "city",
+      "source": "city"
     },
-    "columns": [
-      {
-        "target": "address_1",
-        "transform": "null",
-        "cast_type": "VARCHAR"
-      },
-      {
-        "target": "address_2",
-        "transform": "null",
-        "cast_type": "VARCHAR"
-      },
-      {
-        "target": "county",
-        "transform": "null",
-        "cast_type": "VARCHAR"
-      }
-    ]
-  }
-  
+    {
+      "target": "state",
+      "source": "state_abbreviation"
+    },
+    {
+      "target": "zip",
+      "source": "zip"
+    },
+    {
+      "target": "location_source_value",
+      "source": "zip"
+    },
+    {
+      "target": "address_1",
+      "transform": "null",
+      "cast_type": "VARCHAR"
+    },
+    {
+      "target": "address_2",
+      "transform": "null",
+      "cast_type": "VARCHAR"
+    },
+    {
+      "target": "county",
+      "transform": "null",
+      "cast_type": "VARCHAR"
+    }
+  ]
+}
