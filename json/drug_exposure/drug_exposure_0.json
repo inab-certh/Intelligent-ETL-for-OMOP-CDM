@@ -1,6 +1,7 @@
 {
-    "name": "drug_exposure_from_medications",
+    "id" : 0,
     "output_type": "view",
+    "view_name": "drug_exposure_from_medications",
     "source_table": "synthea.medications",
     "joins": [
       {

@@ -1,36 +1,104 @@
 {
-  "output_type": "insert",
-  "target_table": "omop.drug_exposure",
-  "source_table": "combined_drug_exposure",
-  "insert_columns": [
-    "drug_exposure_id",
-    "person_id",
-    "drug_concept_id",
-    "drug_exposure_start_date",
-    "drug_exposure_start_datetime",
-    "drug_exposure_end_date",
-    "drug_exposure_end_datetime",
-    "verbatim_end_date",
-    "drug_type_concept_id",
-    "stop_reason",
-    "refills",
-    "quantity",
-    "days_supply",
-    "sig",
-    "route_concept_id",
-    "lot_number",
-    "provider_id",
-    "visit_occurrence_id",
-    "visit_detail_id",
-    "drug_source_value",
-    "drug_source_concept_id",
-    "route_source_value",
-    "dose_unit_source_value"
-  ],
-  "select": {
-  "drug_exposure_id": {
-    "expression": "uuid_generate_v4()"
-  },
-  "others": "*"
-}
-}
+    "id": 3,
+    "output_type": "insert",
+    "target_table": "omop.drug_exposure",
+    "source_table": "None",
+    "source_view": "combined_drug_exposure",
+    "primary_key": {
+      "column": "drug_exposure_id",
+      "generation": "uuid",
+      "method": "uuid_generate_v4",
+      "source_fields": ["*"]
+    },
+    "columns": [
+      {
+        "target": "person_id",
+        "source": "person_id"
+      },
+      {
+        "target": "drug_concept_id",
+        "source": "drug_concept_id"
+      },
+      {
+        "target": "drug_exposure_start_date",
+        "source": "drug_exposure_start_date"
+      },
+      {
+        "target": "drug_exposure_start_datetime",
+        "source": "drug_exposure_start_datetime"
+      },
+      {
+        "target": "drug_exposure_end_date",
+        "source": "drug_exposure_end_date"
+      },
+      {
+        "target": "drug_exposure_end_datetime",
+        "source": "drug_exposure_end_datetime"
+      },
+      {
+        "target": "verbatim_end_date",
+        "source": "verbatim_end_date"
+      },
+      {
+        "target": "drug_type_concept_id",
+        "source": "drug_type_concept_id"
+      },
+      {
+        "target": "stop_reason",
+        "source": "stop_reason"
+      },
+      {
+        "target": "refills",
+        "source": "refills"
+      },
+      {
+        "target": "quantity",
+        "source": "quantity"
+      },
+      {
+        "target": "days_supply",
+        "source": "days_supply"
+      },
+      {
+        "target": "sig",
+        "source": "sig"
+      },
+      {
+        "target": "route_concept_id",
+        "source": "route_concept_id"
+      },
+      {
+        "target": "lot_number",
+        "source": "lot_number"
+      },
+      {
+        "target": "provider_id",
+        "source": "provider_id"
+      },
+      {
+        "target": "visit_occurrence_id",
+        "source": "visit_occurrence_id"
+      },
+      {
+        "target": "visit_detail_id",
+        "source": "visit_detail_id"
+      },
+      {
+        "target": "drug_source_value",
+        "source": "drug_source_value"
+      },
+      {
+        "target": "drug_source_concept_id",
+        "source": "drug_source_concept_id"
+      },
+      {
+        "target": "route_source_value",
+        "source": "route_source_value"
+      },
+      {
+        "target": "dose_unit_source_value",
+        "source": "dose_unit_source_value"
+      }
+    ]
+  }
+  

@@ -1,7 +1,7 @@
 {
-  "name": "location_enriched_view",
-  "view_name": "location_enriched_view",
+  "id" : 0,
   "output_type": "view",
+  "view_name": "location_enriched_view",
   "source_table": "synthea.patients",
   "joins": [
     {

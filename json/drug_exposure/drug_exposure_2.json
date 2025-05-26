@@ -1,6 +1,7 @@
 {
-    "name": "combined_drug_exposure",
+    "id" : 2,
     "output_type": "view",
+    "view_name": "combined_drug_exposure",
     "operation": "union_all",
     "sources": [
       "drug_exposure_from_medications",

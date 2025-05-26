@@ -1,8 +1,9 @@
 {
+  "id" : 1,
   "target_table": "omop.location",
-  "source_table": "location_enriched_view",
-  "view_name": "insertable_location_data",
-  "output_type": "view",
+  "source_table": "None",
+  "source_view": "location_enriched_view",
+  "output_type": "insert",
 
   "primary_key": {
     "column": "location_id",
@@ -10,7 +11,6 @@
     "method": "md5_hash",
     "source_fields": ["city", "state_abbreviation", "zip"]
   },
-
   "columns": [
     {
       "target": "city",

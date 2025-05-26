@@ -1,6 +1,7 @@
 {
-    "name": "drug_exposure_from_immunizations",
+    "id" : 1,
     "output_type": "view",
+    "view_name": "drug_exposure_from_immunizations",
     "source_table": "synthea.immunizations",
     "joins": [
       {
