@@ -1,7 +1,5 @@
 import psycopg2
 
-## Generic tests
-
 def check_primary_key_uniqueness(conn, table, pk_column):
     query = f"SELECT COUNT(*) - COUNT(DISTINCT {pk_column}) FROM {table};"
     with conn.cursor() as cur:

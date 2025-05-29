@@ -1,0 +1,22 @@
+[
+  {
+    "role": "system",
+    "content": "You are a highly capable AI specialized in generating optimized SQL code.\n\n## Objective:\nGenerate SQL code that transforms data from a **source database (A)** into a **target database (B)** named `omop`.  \nEach input will include one or more JSON objects describing the transformation logic for a **single specific target table**.\n\n## Input Details:\nEach JSON file will contain:\n- The structure of the source table(s) involved\n- Column-level transformation rules\n- Optional metadata (e.g. view names, output type, primary key logic)\n\n## Constraints:\n- Only generate SQL for the specific target table defined in the JSON.\n- Do not infer or process transformations for any other target tables.\n- All SQL must be limited to transforming data for the **one target table** described.\n\n## Instructions:\n- Carefully analyze the input JSON to understand the transformation logic.\n- Generate clean, well-structured, and **readable PostgreSQL SQL code**.\n- Use the format: `INSERT INTO omop.target_table (...) SELECT ...`\n- Include inline SQL comments **only** when necessary to clarify non-obvious logic.\n- Do **not** include any narrative explanation or commentary in your output.\n- Use **code fence** sql to wrap the code\n\n## Output:\n- Output **only** the final SQL code needed to transform and insert data into the specified `omop` table.\n\n## Execution:\nIf any execution errors occur, they will be returned via the IPython role for correction."
+  },
+  {
+    "role": "user",
+    "content": "Here is the JSON:\n\n{\n  \"id\": 0,\n  \"output_type\": \"view\",\n  \"view_name\": \"location_enriched_view\",\n  \"source_table\": \"synthea.patients\",\n  \"joins\": [\n    {\n      \"type\": \"left\",\n      \"table\": \"omop.states_map\",\n      \"on\": {\n        \"synthea.patients.state\": \"omop.states_map.state\"\n      }\n    }\n  ],\n  \"select\": [\n    \"synthea.patients.city\",\n    \"synthea.patients.state\",\n    \"synthea.patients.zip\",\n    \"omop.states_map.state_abbreviation\"\n  ]\n}"
+  },
+  {
+    "role": "assistant",
+    "content": "```\nsql\nINSERT INTO omop.location_enriched_view (\n  city,\n  zip,\n  state_abbreviation\n)\nSELECT \n  p.city,\n  p.state,\n  p.zip,\n  sm.state_abbreviation\nFROM \n  synthea.patients p\n  LEFT JOIN omop.states_map sm ON p.state = sm.state;\n```"
+  },
+  {
+    "role": "user",
+    "content": "Here is the JSON:\n\n{\n  \"id\": 1,\n  \"target_table\": \"omop.location\",\n  \"source_table\": \"None\",\n  \"source_view\": \"location_enriched_view\",\n  \"output_type\": \"insert\",\n  \"primary_key\": {\n    \"column\": \"location_id\",\n    \"generation\": \"uuid\",\n    \"method\": \"md5_hash\",\n    \"source_fields\": [\n      \"city\",\n      \"state_abbreviation\",\n      \"zip\"\n    ]\n  },\n  \"columns\": [\n    {\n      \"target\": \"city\",\n      \"source\": \"city\"\n    },\n    {\n      \"target\": \"state\",\n      \"source\": \"state_abbreviation\"\n    },\n    {\n      \"target\": \"zip\",\n      \"source\": \"zip\"\n    },\n    {\n      \"target\": \"location_source_value\",\n      \"source\": \"zip\"\n    },\n    {\n      \"target\": \"address_1\",\n      \"transform\": \"null\",\n      \"cast_type\": \"VARCHAR\"\n    },\n    {\n      \"target\": \"address_2\",\n      \"transform\": \"null\",\n      \"cast_type\": \"VARCHAR\"\n    },\n    {\n      \"target\": \"county\",\n      \"transform\": \"null\",\n      \"cast_type\": \"VARCHAR\"\n    }\n  ]\n}"
+  },
+  {
+    "role": "assistant",
+    "content": "```\nsql\nINSERT INTO omop.location (\n  location_id,\n  city,\n  state,\n  zip,\n  location_source_value,\n  address_1,\n  address_2,\n  county\n)\nSELECT \n  MD5(city || state_abbreviation || zip) AS location_id,\n  city,\n  state_abbreviation AS state,\n  zip,\n  zip AS location_source_value,\n  NULL::VARCHAR AS address_1,\n  NULL::VARCHAR AS address_2,\n  NULL::VARCHAR AS county\nFROM \n  omop.location_enriched_view;\n```"
+  }
+]
