@@ -30,7 +30,7 @@ Each JSON input contains:
 
 ## Editing an Existing Script
 
-If you need to update the SQL previously generated for a particular JSON object, use the `edit_sql_file` function **with its `id` parameter set to the same `id` found in that JSON**.
+If you need to update the SQL previously generated for a particular JSON object, use the **`edit_sql_file`** function **with its `id` parameter set to the same `id` found in that JSON**.
 
 ## Available Function
 
@@ -59,7 +59,6 @@ If you need to update the SQL previously generated for a particular JSON object,
 ### Function Call Format
 
 <function={function_name}>{parameters}</function>
-
 
 ## Output
 
