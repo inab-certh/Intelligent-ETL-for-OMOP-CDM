@@ -1,5 +1,51 @@
 import psycopg2
 
+
+def unittest_location_table(user="admin", password="adminpassword", host="localhost", port="5432", database="synthea"):
+    try:
+        # Connexion à la base de données
+        conn = psycopg2.connect(
+            dbname=database,
+            user=user,
+            password=password,
+            host=host,
+            port=port
+        )
+        
+        # Test 1: Vérifier l'unicité de la clé primaire location_id
+        pk_result = check_primary_key_uniqueness(conn, "omop.location", "location_id")
+        
+        if "failed" in pk_result:
+            return f"Primary key test failed: {pk_result}. Fix duplicate location_id values before proceeding."
+        
+        # Test 2: Vérifier l'absence de doublons complets
+        duplicate_query = """
+        SELECT COUNT(*) - COUNT(DISTINCT (city, state, location_source_value, address_1, address_2, county, zip))
+        FROM omop.location;
+        """
+        
+        with conn.cursor() as cur:
+            cur.execute(duplicate_query)
+            duplicates = cur.fetchone()[0]
+            
+            if duplicates > 0:
+                return f"Duplicate rows test failed: Found {duplicates} complete duplicate rows in omop.location. Remove duplicate entries to ensure data integrity."
+        
+        return "All tests passed: Primary key is unique and no duplicate rows found in omop.location table."
+        
+    except psycopg2.Error as e:
+        return f"Database connection error: {e}. Check database credentials and table existence."
+        
+    except Exception as e:
+        return f"Unexpected error during testing: {e}. Verify table structure and permissions."
+        
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
+
+
+
 def check_primary_key_uniqueness(conn, table, pk_column):
     query = f"SELECT COUNT(*) - COUNT(DISTINCT {pk_column}) FROM {table};"
     with conn.cursor() as cur:
@@ -207,10 +253,3 @@ def check_observation_type_not_null(conn):
 
 
 
-check_concept_domain_consistency(conn, "person", "gender_concept_id", "Gender")
-check_logical_date_order(conn, "observation_period", "observation_period_start_date", "observation_period_end_date")
-check_concept_domain_consistency(conn, "condition_occurrence", "condition_concept_id", "Condition")
-check_concept_domain_consistency(conn, "procedure_occurrence", "procedure_concept_id", "Procedure")
-check_concept_domain_consistency(conn, "device_exposure", "device_concept_id", "Device")
-check_concept_domain_consistency(conn, "drug_exposure", "drug_concept_id", "Drug")
-check_logical_date_order(conn, "payer_plan_period", "payer_plan_period_start_date", "payer_plan_period_end_date")

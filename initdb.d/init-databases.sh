@@ -7,3 +7,4 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
     GRANT ALL PRIVILEGES ON DATABASE synthea TO $POSTGRES_USER;
     GRANT ALL PRIVILEGES ON DATABASE omop TO $POSTGRES_USER;
 EOSQL
+docker exec -it postgres_omop_synthea psql -U admin -d synthea

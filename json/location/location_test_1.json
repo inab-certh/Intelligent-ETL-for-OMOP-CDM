@@ -4,7 +4,6 @@
   "source_table": "None",
   "source_view": "location_enriched_view",
   "output_type": "insert",
-
   "primary_key": {
     "column": "location_id",
     "generation": "uuid",
@@ -12,7 +11,7 @@
     "source_fields": ["city", "state_abbreviation", "zip"]
   },
   "columns": [
-    {
+    { 
       "target": "city",
       "source": "city"
     },

@@ -2,20 +2,20 @@
   "id" : 0,
   "output_type": "view",
   "view_name": "location_enriched_view",
-  "source_table": "synthea.patients",
+  "source_table": "synthea_source.patients",
   "joins": [
     {
       "type": "left",
-      "table": "omop.states_map",
+      "table": "omop.state_map",
       "on": {
-        "synthea.patients.state": "omop.states_map.state"
+        "synthea_source.patients.state": "omop.state_map.state"
       }
     }
   ],
   "select": [
-    "synthea.patients.city",
-    "synthea.patients.state",
-    "synthea.patients.zip",
-    "omop.states_map.state_abbreviation"
+    "synthea_source.patients.city",
+    "synthea_source.patients.state",
+    "synthea_source.patients.zip",
+    "omop.state_map.state_abbreviation"
   ]
 }
