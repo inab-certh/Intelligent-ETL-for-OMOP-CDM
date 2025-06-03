@@ -45,3 +45,20 @@ FROM
 
 -- END STEP: 1
 
+-- BEGIN STEP: 0
+-- Section 0 start
+
+CREATE VIEW location_enriched_view AS
+SELECT 
+    p.city,
+    p.state,
+    p.zip,
+    sm.state_abbreviation
+FROM 
+    synthea_source.patients p
+LEFT JOIN 
+    omop.state_map sm ON p.state = sm.state;
+
+-- Section 0 end
+-- END STEP: 0
+
