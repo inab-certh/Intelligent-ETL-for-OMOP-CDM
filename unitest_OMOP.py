@@ -1,9 +1,7 @@
 import psycopg2
 
-
 def unittest_location_table(user="admin", password="adminpassword", host="localhost", port="5432", database="synthea"):
     try:
-        # Connexion à la base de données
         conn = psycopg2.connect(
             dbname=database,
             user=user,
@@ -12,13 +10,11 @@ def unittest_location_table(user="admin", password="adminpassword", host="localh
             port=port
         )
         
-        # Test 1: Vérifier l'unicité de la clé primaire location_id
         pk_result = check_primary_key_uniqueness(conn, "omop.location", "location_id")
         
         if "failed" in pk_result:
             return f"Primary key test failed: {pk_result}. Fix duplicate location_id values before proceeding."
         
-        # Test 2: Vérifier l'absence de doublons complets
         duplicate_query = """
         SELECT COUNT(*) - COUNT(DISTINCT (city, state, location_source_value, address_1, address_2, county, zip))
         FROM omop.location;
@@ -42,9 +38,6 @@ def unittest_location_table(user="admin", password="adminpassword", host="localh
     finally:
         if 'conn' in locals():
             conn.close()
-
-
-
 
 def check_primary_key_uniqueness(conn, table, pk_column):
     query = f"SELECT COUNT(*) - COUNT(DISTINCT {pk_column}) FROM {table};"
