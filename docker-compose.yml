@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:latest
@@ -7,14 +5,13 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: adminpassword
-      POSTGRES_DB: postgres  
-      POSTGRES_MULTIPLE_DATABASES: "synthea,omop"  
+      POSTGRES_DB: postgres
+      POSTGRES_MULTIPLE_DATABASES: "synthea,omop"
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - /home/petriscyril/Desktop/Agent_ETL/Synthea:/Synthea
-      - ./initdb.d:/docker-entrypoint-initdb.d  
+      - ./initdb.d:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin"]
       interval: 5s
