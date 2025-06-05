@@ -34,33 +34,42 @@ class AgentState(TypedDict):
     retry_count: int
 
 def execute_sql_script_from_file(
-        file_path: str,tests: list[Callable[[psycopg2.extensions.connection], Any]] | None = None,
-        dbname: str = "synthea",user: str = "admin",password: str = "adminpassword",host: str = "localhost",port: str = "5432",
+        file_path: str,
+        tests: list[Callable[[psycopg2.extensions.connection], Any]] | None = None,
+        dbname: str = "synthea",
+        user: str = "admin",
+        password: str = "adminpassword",
+        host: str = "localhost",
+        port: str = "5432",
 ) -> tuple[bool, str, bool, str]:
 
     if not os.path.isfile(file_path):
         return False, f"SQL file not found: {file_path}", False, ""
 
+    conn = None
+    cursor = None
+    
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             sql_script = f.read()
 
-        conn = psycopg2.connect(dbname=dbname, user=user,
-                                password=password, host=host, port=port)
+        conn = psycopg2.connect(
+            dbname=dbname, 
+            user=user,
+            password=password, 
+            host=host, 
+            port=port
+        )
         cursor = conn.cursor()
         cursor.execute(sql_script)
 
         tests_ok, tests_msg = True, "No tests provided."
         if tests:
             raw_results = [fn(conn) for fn in tests]
-            tests_ok   = all(all_tests_passed(r) for r in raw_results)
-            tests_msg  = "\n".join(map(str, raw_results))
+            tests_ok = all(all_tests_passed(r) for r in raw_results)
+            tests_msg = "\n".join(map(str, raw_results))
 
-        if tests_ok:
-            conn.commit()
-        else:
-            conn.rollback()
-
+        # Traitement des résultats AVANT commit/rollback
         if cursor.description:
             df = pd.DataFrame(cursor.fetchall(),
                               columns=[d[0] for d in cursor.description])
@@ -68,14 +77,29 @@ def execute_sql_script_from_file(
         else:
             sql_msg = "SQL executed successfully with no results."
 
+        # Commit ou rollback basé sur les tests
+        if tests_ok:
+            conn.commit()
+        else:
+            conn.rollback()
+
         return True, sql_msg, tests_ok, tests_msg
 
     except psycopg2.Error as e:
-        conn.rollback()
+        if conn:
+            conn.rollback()
         return False, f"[{dbname}] SQL Execution Error: {e}", False, ""
+    
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return False, f"[{dbname}] General Error: {e}", False, ""
+    
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 def deepseek_chat_completion(prompt):
     client = OpenAI(api_key="sk-30996914f51447c69aab2c2e5f471d33", base_url="https://api.deepseek.com")
