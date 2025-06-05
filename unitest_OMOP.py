@@ -1,6 +1,9 @@
 import psycopg2
+import json
 
 def unittest_location_table(user="admin", password="adminpassword", host="localhost", port="5432", database="synthea"):
+    results = []
+
     try:
         conn = psycopg2.connect(
             dbname=database,
@@ -9,35 +12,77 @@ def unittest_location_table(user="admin", password="adminpassword", host="localh
             host=host,
             port=port
         )
-        
+
+        # --- Test 1: Clé primaire unique ---
+        test_name = "Primary Key Uniqueness (location_id)"
         pk_result = check_primary_key_uniqueness(conn, "omop.location", "location_id")
-        
+
         if "failed" in pk_result:
-            return f"Primary key test failed: {pk_result}. Fix duplicate location_id values before proceeding."
-        
+            results.append({
+                "test": test_name,
+                "status": "failed",
+                "message": pk_result
+            })
+        else:
+            results.append({
+                "test": test_name,
+                "status": "passed",
+                "message": pk_result
+            })
+
+        # --- Test 2: Doublons complets ---
+        test_name = "No Complete Duplicate Rows"
         duplicate_query = """
         SELECT COUNT(*) - COUNT(DISTINCT (city, state, location_source_value, address_1, address_2, county, zip))
         FROM omop.location;
         """
-        
+
         with conn.cursor() as cur:
             cur.execute(duplicate_query)
             duplicates = cur.fetchone()[0]
-            
+
             if duplicates > 0:
-                return f"Duplicate rows test failed: Found {duplicates} complete duplicate rows in omop.location. Remove duplicate entries to ensure data integrity."
-        
-        return "All tests passed: Primary key is unique and no duplicate rows found in omop.location table."
-        
+                results.append({
+                    "test": test_name,
+                    "status": "failed",
+                    "message": f"Found {duplicates} complete duplicate rows."
+                })
+            else:
+                results.append({
+                    "test": test_name,
+                    "status": "passed",
+                    "message": "No complete duplicates found."
+                })
+
+        # Résumé global
+        passed = all(r["status"] == "passed" for r in results)
+        summary = {
+            "summary": "All tests passed." if passed else "Some tests failed.",
+            "overall_status": "passed" if passed else "failed",
+            "results": results
+        }
+
+        return json.dumps(summary, indent=2)
+
     except psycopg2.Error as e:
-        return f"Database connection error: {e}. Check database credentials and table existence."
-        
+        return json.dumps({
+            "summary": "Database connection error",
+            "overall_status": "failed",
+            "error": str(e)
+        }, indent=2)
+
     except Exception as e:
-        return f"Unexpected error during testing: {e}. Verify table structure and permissions."
-        
+        return json.dumps({
+            "summary": "Unexpected error",
+            "overall_status": "failed",
+            "error": str(e)
+        }, indent=2)
+
     finally:
         if 'conn' in locals():
             conn.close()
+
+
 
 def check_primary_key_uniqueness(conn, table, pk_column):
     query = f"SELECT COUNT(*) - COUNT(DISTINCT {pk_column}) FROM {table};"
