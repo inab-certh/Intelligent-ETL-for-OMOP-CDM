@@ -1,0 +1,29 @@
+# Fichiers d'environnement
+.env
+.env.local
+.env.production
+
+# Dossiers Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Dossiers de build
+build/
+dist/
+node_modules/
+
+# Fichiers de log
+logs/
+*.log
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

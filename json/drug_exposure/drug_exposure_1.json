@@ -1,0 +1,89 @@
+{
+    "id" : 1,
+    "output_type": "view",
+    "view_name": "drug_exposure_from_immunizations",
+    "source_table": "synthea.immunizations",
+    "joins": [
+      {
+        "type": "inner",
+        "table": "omop.source_to_standard_vocab_map",
+        "alias": "srctostdvm",
+        "on": {
+          "CAST(i.code AS VARCHAR)": "srctostdvm.source_code"
+        },
+        "filters": {
+          "target_domain_id": "Drug",
+          "target_vocabulary_id": "CVX",
+          "target_standard_concept": "S",
+          "target_invalid_reason": null
+        }
+      },
+      {
+        "type": "inner",
+        "table": "omop.source_to_source_vocab_map",
+        "alias": "srctosrcvm",
+        "on": {
+          "CAST(i.code AS VARCHAR)": "srctosrcvm.source_code"
+        },
+        "filters": {
+          "source_vocabulary_id": "CVX"
+        }
+      },
+      {
+        "type": "left",
+        "table": "omop.final_visit_ids",
+        "alias": "fv",
+        "on": {
+          "i.encounter": "fv.encounter_id"
+        }
+      },
+      {
+        "type": "left",
+        "table": "synthea.encounters",
+        "alias": "e",
+        "on": {
+          "i.encounter": "e.id",
+          "i.patient": "e.patient"
+        }
+      },
+      {
+        "type": "left",
+        "table": "omop.provider",
+        "alias": "pr",
+        "on": {
+          "e.provider": "pr.provider_source_value"
+        }
+      },
+      {
+        "type": "inner",
+        "table": "omop.person",
+        "alias": "p",
+        "on": {
+          "i.patient": "p.person_source_value"
+        }
+      }
+    ],
+    "mappings": [
+      { "target": "person_id", "source": "p.person_id" },
+      { "target": "drug_concept_id", "source": "srctostdvm.target_concept_id" },
+      { "target": "drug_exposure_start_date", "source": "i.date" },
+      { "target": "drug_exposure_end_date", "source": "i.date" },
+      { "target": "verbatim_end_date", "source": "i.date" },
+      { "target": "drug_type_concept_id", "value": 32827 },
+      { "target": "stop_reason", "transform": "null", "cast_type": "VARCHAR" },
+      { "target": "days_supply", "value": 0 },
+      { "target": "provider_id", "source": "pr.provider_id" },
+      { "target": "visit_occurrence_id", "source": "fv.visit_occurrence_id_new" },
+      { "target": "visit_detail_id", "expression": "fv.visit_occurrence_id_new + 1000000" },
+      { "target": "drug_source_value", "source": "i.code" },
+      { "target": "drug_source_concept_id", "source": "srctosrcvm.source_concept_id" },
+      { "target": "sig", "transform": "null", "cast_type": "VARCHAR" },
+      { "target": "refills", "value": 0 },
+      { "target": "quantity", "value": 0 },
+      { "target": "route_concept_id", "value": 0 },
+      { "target": "lot_number", "value": 0 },
+      { "target": "route_source_value", "transform": "null", "cast_type": "VARCHAR" },
+      { "target": "dose_unit_source_value", "transform": "null", "cast_type": "VARCHAR" }
+    ]
+  }
+  

@@ -1,0 +1,67 @@
+----- Json Definition
+
+{
+  "id": 0,  // Unique identifier linking this JSON block to the corresponding SQL section
+
+  "output_type": "view | insert",  // Type of output: create a view or insert into a table
+
+  "view_name": "string",           // Required if output_type is "view"
+  "target_table": "string",        // Required if output_type is "insert"
+
+  // List of input sources (either tables or views)
+  "sources": [
+    { "type": "table", "name": "table1" },
+    { "type": "view", "name": "view1" }
+  ],
+
+  // Optional list of joins
+  "joins": [
+    {
+      "type": "inner | left | right | full", // SQL join type
+      "table": "string",                     // Table or view to join
+
+      // Defines the join condition using nested logical expressions
+      "on": {
+        "type": "and",
+        "conditions": [
+          { "left_expression": "col1", "operator": "=", "right_expression": "col2" },
+          {
+            "type": "or",
+            "conditions": [
+              { "left_expression": "col1", "operator": "IS", "right_expression": "NULL" },
+              { "left_expression": "col1", "operator": "=", "right_expression": "'value'" }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+
+  // Optional filter conditions with explicit scope
+  "filters": {
+    "scope": "where",  // either "where" (before aggregation) or "having" (after aggregation)
+    "type": "and",     // logical operator: "and" or "or"
+    "conditions": [
+      { "left_expression": "p.status", "operator": "=", "right_expression": "'active'" },
+      { "left_expression": "p.age", "operator": ">", "right_expression": "18" }
+    ]
+  },
+
+  // Defines the output columns for SELECT or INSERT
+  "columns": [
+    {
+      "target": "target_column",             // Column in the target table or view
+      "source": "source_column (optional)",  // Source column (optional if using value)
+      "value": "literal (optional)",         // Literal value to use instead of a column
+      "cast_type": "SQL_TYPE (optional)",    // SQL type cast (e.g., INTEGER, DATE)
+      "description": "description (optional)"// Optional human-readable comment
+    }
+  ],
+
+  // Primary key generation (only for inserts, using UUID)
+  "primary_key": {
+    "column": "target_column",        // Target column that will store the primary key
+    "generation": "uuid",             // Key generation method (currently only "uuid" supported)
+    "method": "uuid_generate_v4"      // SQL function used to generate the UUID
+  }
+}
